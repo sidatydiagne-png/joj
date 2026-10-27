@@ -18,6 +18,8 @@ export async function api(path, { method = "GET", body, form, token } = {}) {
     payload = JSON.stringify(body);
   }
   if (token) headers.Authorization = `Bearer ${token}`;
+  // Tunnel ngrok gratuit : évite la page d'avertissement qui bloquerait les appels du site vers l'API
+  if (API_URL.includes("ngrok")) headers["ngrok-skip-browser-warning"] = "1";
 
   let res;
   try {
