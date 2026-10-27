@@ -93,7 +93,8 @@ app.use(
       cb(new Error("ORIGIN_NOT_ALLOWED"));
     },
     methods: ["GET", "POST", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    // ngrok-skip-browser-warning : en-tête envoyé par le site quand l'API est derrière un tunnel ngrok gratuit
+    allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
   })
 );
 app.use(express.json({ limit: "20kb" }));
@@ -173,14 +174,14 @@ app.post("/api/lost-items/:id/contact", contactLimiter, async (req, res) => {
 
   db.prepare("INSERT INTO item_messages (item_id, name, contact, message) VALUES (?, ?, ?, ?)").run(item.id, name, contact, message);
 
-  await sendMail({
+  const emailed = await sendMail({
     to: item.email,
     bcc: ADMIN_EMAIL || undefined,
     replyTo: isEmail(contact) ? contact : undefined,
     subject: `Dakar Accueil 2026 — message au sujet de « ${item.title} »`,
     text: `De : ${name}\nContact : ${contact}\n\nConcernant l'objet : ${item.title} (#${item.id})\n\nMessage :\n${message}`,
   });
-  res.json({ ok: true });
+  res.json({ ok: true, emailed });
 });
 
 // Assistance : chaque demande reçoit un jeton aléatoire gardé dans le navigateur (pas de compte nécessaire)

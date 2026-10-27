@@ -22,6 +22,7 @@ export default function LostFound() {
   const { data: items, loading, error, reload } = useApi("/api/lost-items");
   const [sending, setSending] = useState(false);
   const [contactItem, setContactItem] = useState(null);
+  const [photoItem, setPhotoItem] = useState(null);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -108,7 +109,9 @@ export default function LostFound() {
               items.map((it) => (
                 <div className="item" key={it.id}>
                   {it.photo ? (
-                    <img src={photoSrc(it.photo)} alt="" width="64" height="64" loading="lazy" />
+                    <button type="button" className="thumb" aria-label={t("Agrandir la photo")} onClick={() => setPhotoItem(it)}>
+                      <img src={photoSrc(it.photo)} alt="" width="64" height="64" loading="lazy" />
+                    </button>
                   ) : (
                     <div style={{ width: 64, height: 64, borderRadius: 6, background: "var(--sand-2)", flex: "none" }} />
                   )}
@@ -132,6 +135,7 @@ export default function LostFound() {
       </div>
 
       <ContactDialog item={contactItem} onClose={() => setContactItem(null)} />
+      <PhotoDialog item={photoItem} onClose={() => setPhotoItem(null)} />
     </ModulePage>
   );
 }
@@ -156,8 +160,12 @@ function ContactDialog({ item, onClose }) {
     const body = Object.fromEntries(new FormData(form));
     setSending(true);
     try {
-      await api(`/api/lost-items/${item.id}/contact`, { method: "POST", body });
-      toast(t("Message envoyé au déclarant."));
+      const res = await api(`/api/lost-items/${item.id}/contact`, { method: "POST", body });
+      toast(
+        res.emailed
+          ? t("Message envoyé au déclarant.")
+          : t("Message enregistré. L'équipe du portail le transmettra au déclarant.")
+      );
       form.reset();
       onClose();
     } catch (err) {
@@ -183,6 +191,38 @@ function ContactDialog({ item, onClose }) {
               {sending ? t("Envoi...") : t("Envoyer")}
             </button>
           </form>
+        </div>
+      )}
+    </dialog>
+  );
+}
+
+// Photo en grand : clic sur la miniature ; on ferme avec la croix, Échap ou un clic à côté de l'image
+function PhotoDialog({ item, onClose }) {
+  const { t } = useLang();
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (item && !dialog.open) dialog.showModal();
+    if (!item && dialog.open) dialog.close();
+  }, [item]);
+
+  return (
+    <dialog
+      ref={ref}
+      className="modal photo-modal"
+      onClose={onClose}
+      onClick={(e) => {
+        if (e.target === ref.current) onClose();
+      }}
+    >
+      {item && (
+        <div className="inner">
+          <button type="button" className="close" aria-label={t("Fermer")} onClick={onClose}>×</button>
+          <img src={photoSrc(item.photo)} alt={item.title} />
+          <p className="photo-caption">{item.title}</p>
         </div>
       )}
     </dialog>

@@ -204,3 +204,12 @@ nav.primary a[aria-current="page"]{color:#fff;border-bottom-color:var(--gold);}
 }
 
 /* ===== Contenu bilingue saisi dans l'admin : <div class="dk-fr">…</div><div class="dk-en">…</div> ===== */
+
+/* ===== Photo cliquable (Objets perdus) ===== */
+.item .thumb{flex:none;padding:0;border:0;background:none;cursor:zoom-in;border-radius:var(--radius-s);line-height:0;align-self:flex-start;}
+.item .thumb:hover img{opacity:0.88;}
+.item .thumb:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
+dialog.photo-modal{max-width:min(92vw,820px);width:auto;}
+dialog.photo-modal .inner{padding:44px 16px 16px;text-align:center;}
+dialog.photo-modal img{display:block;max-width:100%;max-height:72vh;margin:0 auto;border-radius:var(--radius-s);}
+dialog.photo-modal .photo-caption{margin:12px 0 0;font-weight:600;}

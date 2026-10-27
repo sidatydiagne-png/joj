@@ -139,5 +139,7 @@ export const EN = {
   "Cette page n'existe pas.": "This page does not exist.",
   "Retour à l'accueil": "Back to home",
   "Envoi...": "Sending...",
-  "Page d'accueil": "Home page"
+  "Page d'accueil": "Home page",
+  "Agrandir la photo": "Enlarge photo",
+  "Message enregistré. L'équipe du portail le transmettra au déclarant.": "Message saved. The portal team will forward it to the person who posted the report."
 };
